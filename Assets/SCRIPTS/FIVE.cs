@@ -44,6 +44,7 @@ public class FIVE : MonoBehaviour
     public GameObject startGamePanel;
 
     //public Button 
+    public GameObject startButton;
 
     private void Awake()
     {
@@ -80,7 +81,7 @@ public class FIVE : MonoBehaviour
 
     private IEnumerator GenerateNextRandomPos()
     {
-        
+        //if(startButton.clicked)
         while (!isGameOver)
         {
             yield return new WaitForSeconds(Random.Range(1f, 2.5f));
