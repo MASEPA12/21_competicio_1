@@ -36,7 +36,7 @@ public class FIVE : MonoBehaviour
     public TextMeshProUGUI livesText;
     public TextMeshProUGUI pointsText;
     public TextMeshProUGUI timeText;
-    public GameObject gameOverPanel2;
+    public GameObject gameOverPanel;
 
     //counter
     public int time = 0;
@@ -63,9 +63,11 @@ public class FIVE : MonoBehaviour
         time = 0;
         SetText();
 
+
         //_audiosource.PlayOneShot;
 
-        gameOverPanel2.SetActive(false);
+
+        gameOverPanel.SetActive(false);
 
         StartCoroutine(GenerateNextRandomPos());
         StartCoroutine(Counter()); //start the time counter
@@ -103,7 +105,7 @@ public class FIVE : MonoBehaviour
 
                 if (--lives == 0) //si tras restar una vida, no men queden, gameOver
                 {
-                    gameOverPanel2.SetActive(true); //if game over = true --> pups up the game over panel
+                    gameOverPanel.SetActive(true); //if game over = true --> pups up the game over panel
 
                     SetText(); //actualitz es text abans (qeu serà = 0)
 
@@ -124,7 +126,7 @@ public class FIVE : MonoBehaviour
 
             hasBeenClicked = false; //reset que hagui pitjat o no 
 
-            gameOverPanel2.SetActive(false); //quan no morim no surt es panel
+            gameOverPanel.SetActive(false); //quan no morim no surt es panel
 
             llistaColors.Remove(randomNumColor);
         }
@@ -160,5 +162,4 @@ public class FIVE : MonoBehaviour
             yield return new WaitForSeconds(1);
         }
     }
-
 }
