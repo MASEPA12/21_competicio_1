@@ -22,18 +22,30 @@ public class FIVE : MonoBehaviour
     //bloquear es clik
     public bool hasBeenClicked;
 
-    //public AudioSource _audiosource;
-    //public AudioClip sound;
+    //audio
+    public AudioSource _audiosource;
+    public AudioClip sound;
+
+    //lives
+    public int lives = 3;
+
+    //text
+    public TextMeshProUGUI livesText;
+    public TextMeshProUGUI pointsText;
+
 
     private void Awake()
     {
         _material = GetComponent<MeshRenderer>().material;
+        _audiosource = GetComponent<AudioSource>();
 
     }
     void Start()
     {
         points = 0; //reiniciar puntuació
         hasBeenClicked = false; //reset clik
+        lives = 3;
+        SetText();
 
         StartCoroutine(GenerateNextRandomPos());
     }
@@ -55,6 +67,20 @@ public class FIVE : MonoBehaviour
 
             _material.color = Color.blue; //reseteamos el color a nes principi
 
+            if(hasBeenClicked == false)
+            {
+                if (--lives == 0) //si tras restar una vida, no men queden, gameover
+                {
+                    SetText();
+
+                    //aturar es temps
+                    isGameOver = true;
+
+                    //posam es brake perquè no se segueixi executant ses línees des materix ambit de visibilitat
+                    break;
+                }
+            }
+
             transform.position = GenerateRandomPos();
 
             hasBeenClicked = false; //reset que hagui pitjat o no 
@@ -69,8 +95,18 @@ public class FIVE : MonoBehaviour
         {
             _material.color = Color.green;
             points++;
+            //update points
+
             hasBeenClicked = true; //ja no se pot pitjar +
+            _audiosource.PlayOneShot(sound,1); //sona "sound" un pic a volum 1
         } 
         //fer un renou(AudioClip.play) {declarar audioclip i audiosource a s'awake}
+    }
+
+
+    public void SetText()
+    {
+        livesText.text = $"LIVES: {lives}";
+        //update text points
     }
 }
