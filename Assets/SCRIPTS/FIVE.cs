@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class FIVE : MonoBehaviour
 {
@@ -24,7 +25,8 @@ public class FIVE : MonoBehaviour
 
     //audio
     public AudioSource _audiosource;
-    public AudioClip sound;
+    public AudioClip soundClick;
+    public AudioClip soundLoose;
 
     //lives
     public int lives = 3;
@@ -32,7 +34,16 @@ public class FIVE : MonoBehaviour
     //text
     public TextMeshProUGUI livesText;
     public TextMeshProUGUI pointsText;
+    public TextMeshProUGUI timeText;
 
+    //counter
+    private int time = 0;
+
+    //panel
+    public GameObject restartGamePanel;
+    public GameObject startGamePanel;
+
+    //public Button 
 
     private void Awake()
     {
@@ -45,9 +56,16 @@ public class FIVE : MonoBehaviour
         points = 0; //reiniciar puntuació
         hasBeenClicked = false; //reset clik
         lives = 3;
+        restartGamePanel.SetActive(false); //mos aseguram que no surt es game over panel al principi
+
+        startGamePanel.SetActive(false); //al principi surt start panel--> amb ses instruccions
+
         SetText();
 
-        StartCoroutine(GenerateNextRandomPos());
+        StartCoroutine(GenerateNextRandomPos()); 
+        StartCoroutine(Counter()); //start the time counter
+
+        
     }
     
      private Vector3 GenerateRandomPos()
@@ -59,33 +77,49 @@ public class FIVE : MonoBehaviour
         return pos;
     }
 
+
     private IEnumerator GenerateNextRandomPos()
     {
+        
         while (!isGameOver)
         {
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(Random.Range(1f, 2.5f));
 
             _material.color = Color.blue; //reseteamos el color a nes principi
 
             if(hasBeenClicked == false)
             {
-                if (--lives == 0) //si tras restar una vida, no men queden, gameover
-                {
-                    SetText();
+                _audiosource.PlayOneShot(soundLoose, 1); //sona "soundGameOver" per cada vegada que no hem pitjat damunt sa bolla 
+                
 
-                    //aturar es temps
+                if (--lives == 0) //si tras restar una vida, no men queden, gameOver
+                {
+                    SetText(); //actualitz es text abans (qeu serà = 0)
+
+                    //change the color to red when game over
+                    _material.color = Color.red;
+
+                    restartGamePanel.SetActive(true); //if game over = true --> pups up the game over panel
+
+                    Time.timeScale = 0; //aturam es temps **pregunta, perquè no ho puc fer amb un StopCorroutine)
+
                     isGameOver = true;
 
                     //posam es brake perquè no se segueixi executant ses línees des materix ambit de visibilitat
                     break;
                 }
+                
+                SetText();
             }
 
             transform.position = GenerateRandomPos();
 
             hasBeenClicked = false; //reset que hagui pitjat o no 
+
+            restartGamePanel.SetActive(false); //quan no morim no surt es panel
+
         }
-      
+
     }
 
 
@@ -94,11 +128,12 @@ public class FIVE : MonoBehaviour
         if(!hasBeenClicked) //si no s'ha pitjat, anteriorment, s'executa 
         {
             _material.color = Color.green;
+
             points++;
-            //update points
+            SetText();
 
             hasBeenClicked = true; //ja no se pot pitjar +
-            _audiosource.PlayOneShot(sound,1); //sona "sound" un pic a volum 1
+            _audiosource.PlayOneShot(soundClick,1); //sona "sound" un pic a volum 1
         } 
         //fer un renou(AudioClip.play) {declarar audioclip i audiosource a s'awake}
     }
@@ -107,6 +142,27 @@ public class FIVE : MonoBehaviour
     public void SetText()
     {
         livesText.text = $"LIVES: {lives}";
-        //update text points
+        pointsText.text = $"POINTS: {points}"; //update text points
+    }
+
+
+    private IEnumerator Counter()
+    {   //it displays the seconds 
+        while (true)
+        {
+            timeText.text = ($"TIME: {time}");
+            time++;
+            yield return new WaitForSeconds(1);
+        }
+    }
+
+    public void RestartButton()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void StartButton()
+    {
+
     }
 }
